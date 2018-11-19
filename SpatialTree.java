@@ -13,14 +13,7 @@ public class SpatialTree{
 	   myRoot = null;
    }
    
-   private Node validateLocation( Location<Point2D> loc )
-   {
-	   if (( loc == null ) || !( loc instanceof Node ))
-	   {
-		   throw new IllegalArgumentException( "Not a Valid Location! ");
-	   }
-	   return (Node) loc;
-   }
+   
    
 
    public void add( Point2D val ) {
@@ -30,6 +23,18 @@ public class SpatialTree{
 	   else {
 		   insertHelper( val, myRoot );
 	   }
+   }
+   
+    public Location<Point2D> addRoot( Point2D val )
+    {
+	   if ( myRoot != null )
+	   {
+		   throw new IllegalStateException( "Tree is Not Empty! Cannot add Root!" );
+	   }
+	   // true because first node is x node
+	   myRoot = new Node( val, null, true );
+	   mySize++;
+	   return myRoot;
    }
    
    private void insertHelper( Point2D val, Location<Point2D> loc ) {
@@ -44,6 +49,14 @@ public class SpatialTree{
 	   
    }
    
+   private Node validateLocation( Location<Point2D> loc )
+   {
+	   if (( loc == null ) || !( loc instanceof Node ))
+	   {
+		   throw new IllegalArgumentException( "Not a Valid Location! ");
+	   }
+	   return (Node) loc;
+   }
    private void xNodeHelper(Node n, Point2D val) {
 	   if ( val.getX() <= n.getValue().getX()) {
 		   if ( n.myLeftChild == null ) {
@@ -82,18 +95,7 @@ public class SpatialTree{
 	   }
    }
    
-   public Location<Point2D> addRoot( Point2D val )
-   {
-	   if ( myRoot != null )
-	   {
-		   throw new IllegalStateException( "Tree is Not Empty! Cannot add Root!" );
-	   }
-	   // true because first node is x node
-	   myRoot = new Node( val, null, true );
-	   mySize++;
-	   return myRoot;
-   }
-   
+  
    public Location<Point2D> addLeftChild( Point2D val, Location<Point2D> loc ) 
    {
 	   Node n = validateLocation( loc );
@@ -150,7 +152,6 @@ public class SpatialTree{
    private void drawHelper(Node node) {
 	   
 	   	if(node.isXNode) {
-	   		
 	   		xDrawHelper(node);
 	   	} else {
 	   		yDrawHelper(node);
@@ -205,7 +206,8 @@ public class SpatialTree{
 		   if(n.isXNode) {
 			   if(traverser.myValue.getY() > n.myValue.getY()) {
 				   upperBound = traverser.myValue.getY();
-				   for(int i = 0; traverser.myParent!= null; i++ , traverser = traverser.myParent) {
+				   for(int i = 1; traverser.myParent!= null; i++ ) {
+					   traverser = traverser.myParent;
 					   if(i % 2 == 0) {
 						   if(!traverser.isXNode && traverser.myValue.getY() < trailer.myValue.getY() && traverser.myValue.getY() < n.myValue.getY()) {
 						   lowerBound = traverser.myValue.getY();
@@ -216,8 +218,9 @@ public class SpatialTree{
 				   
 			   } else {
 				   lowerBound = traverser.myValue.getY();
-				   for(int i = 0; traverser.myParent!= null; i++, traverser = traverser.myParent) {
+				   for(int i = 1; traverser.myParent!= null; i++) {
 					   if(i % 2 == 0) {
+						   traverser = traverser.myParent;
 						   if(!traverser.isXNode && traverser.myValue.getY() > trailer.myValue.getY() && traverser.myValue.getY() > n.myValue.getY()) {
 						   upperBound = traverser.myValue.getY();
 						   break;
@@ -229,8 +232,9 @@ public class SpatialTree{
 		   } else {
 			   if(traverser.myValue.getX() > n.myValue.getX()) {
 				   upperBound = traverser.myValue.getX();
-				   for(int i = 0; traverser.myParent!= null; i++, traverser = traverser.myParent) {
+				   for(int i = 1; traverser.myParent!= null; i++) {
 					   if(i % 2 == 0) {
+						   traverser = traverser.myParent;
 						   if(traverser.isXNode && traverser.myValue.getX() < trailer.myValue.getX() && traverser.myValue.getX() < n.myValue.getX()) {
 						   lowerBound = traverser.myValue.getX();
 						   break;
@@ -239,7 +243,8 @@ public class SpatialTree{
 				   }
 			   } else {
 				   lowerBound = traverser.myValue.getX();
-				   for(int i = 0; traverser.myParent!= null; i++, traverser = traverser.myParent) {
+				   for(int i = 1; traverser.myParent!= null; i++) {
+					   traverser = traverser.myParent;
 					   if(i % 2 == 0) {
 						   if(traverser.isXNode && traverser.myValue.getX() > trailer.myValue.getX() && traverser.myValue.getX() > n.myValue.getX()) {
 						   upperBound = traverser.myValue.getX();
